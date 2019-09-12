@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Live Transcription with Twilio Media Streams</title>
+    <link rel="stylesheet" type="text/css" href="style.css" />
+  </head>
+  <body>
+    <h1>Live Transcription with Twilio Media Streams</h1>
+    <img src="/twilio-logo-red.png" />
+    <img src="/cloudspeechtotext.png" />
+    <h3>
+      Call your Twilio Number, start talking and watch your words magically
+      appear.
+    </h3>
+    <p id="transcription-container"></p>
+    <script>
+      document.addEventListener("DOMContentLoaded", event => {
+        webSocket = new WebSocket("ws://localhost:8080");
+        webSocket.onmessage = function(msg) {
+          const data = JSON.parse(msg.data);
+          if (data.event === "interim-transcription") {
+            document.getElementById("transcription-container").innerHTML =
+              data.text;
+          }
+        };
+      });
+    </script>
+  </body>
+</html>
