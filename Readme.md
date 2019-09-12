@@ -9,7 +9,7 @@ LINK WILL GO HERE
 
 ---
 
-##Prerequisites
+## Prerequisites
 Before we can get started, you’ll need to make sure to have:
 
 - A [Free Twilio Account](https://www.twilio.com/try-twilio)
