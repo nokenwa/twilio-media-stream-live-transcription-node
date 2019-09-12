@@ -1,8 +1,8 @@
-#Live Transcribing Phone Calls using Twilio Media Streams and Google Speech-to-Text
+# Live Transcribing Phone Calls using Twilio Media Streams and Google Speech-to-Text
 
 With Twilio Media Streams, you can now extend the capabilities of your Twilio-powered voice application with real time access to the raw audio stream of phone calls. For example, we can build tools that transcribe the speech from a phone call live into a browser window, run sentiment analysis of the speech on a phone call or even use voice biometrics to identify individuals.
 
-##Blog Post
+## Blog Post
 If you prefer a step by step guide through building this yourself, this blog post will guide you through transcribing speech from a phone call into text, live in the browser using Twilio and Google Speech-to-Text using Node.js.
 
 LINK WILL GO HERE
