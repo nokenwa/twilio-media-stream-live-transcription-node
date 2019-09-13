@@ -5,7 +5,7 @@ With Twilio Media Streams, you can now extend the capabilities of your Twilio-po
 ## Blog Post
 If you prefer a step by step guide through building this yourself, this blog post will guide you through transcribing speech from a phone call into text, live in the browser using Twilio and Google Speech-to-Text using Node.js.
 
-LINK WILL GO HERE
+[Visit the Blog Post here](https://www.twilio.com/blog/live-transcribing-phone-calls-using-twilio-media-streams-and-google-speech-text)
 
 ---
 
