@@ -3,7 +3,9 @@ const express = require("express");
 const app = express();
 const server = require("http").createServer(app);
 const wss = new WebSocket.Server({ server });
+const bodyParser = require("body-parser");
 
+app.use(bodyParser.urlencoded({ extended: false }));
 const path = require("path");
 
 require("dotenv").config();
@@ -17,14 +19,21 @@ const request = {
   config: {
     encoding: "MULAW",
     sampleRateHertz: 8000,
-    languageCode: "en-GB"
+    languageCode: "en-US",
+    model: "phone_call",
+    diarization_config: {
+      min_speaker_count: 1,
+      max_speaker_count: 1
+    }
   },
   interimResults: true // If you want interim results, set this to true
 };
 
 wss.on("connection", function connection(ws) {
   console.log("New Connection Initiated");
-
+  let callSid = "";
+  let speaker = null;
+  let holdInterim = "";
   let recognizeStream = null;
 
   ws.on("message", function incoming(message) {
@@ -37,20 +46,38 @@ wss.on("connection", function connection(ws) {
           .streamingRecognize(request)
           .on("error", console.error)
           .on("data", data => {
-            console.log(data.results[0].alternatives[0].transcript);
+            let incomingTranscript = {
+              text: data.results[0].alternatives[0].transcript,
+              words: data.results[0].alternatives[0].words,
+              callSid: callSid,
+              speaker: speaker,
+              isFinal: data.results[0].isFinal
+            };
+
+            holdInterim = incomingTranscript;
+
             wss.clients.forEach(client => {
               if (client.readyState === WebSocket.OPEN) {
-                client.send(
-                  JSON.stringify({
-                    event: "interim-transcription",
-                    text: data.results[0].alternatives[0].transcript
-                  })
-                );
+                client.send(JSON.stringify(incomingTranscript));
               }
             });
+          })
+          .on("close", () => {
+            console.log("Recognize Stream is closing");
+            if (!holdInterim.isFinal) {
+              console.log("closing last message");
+              wss.clients.forEach(client => {
+                if (client.readyState === WebSocket.OPEN) {
+                  holdInterim.isFinal = true;
+                  client.send(JSON.stringify(holdInterim));
+                }
+              });
+            }
           });
         break;
       case "start":
+        callSid = msg.start.callSid;
+        speaker = msg.start.customParameters.speaker;
         console.log(`Starting Media Stream ${msg.streamSid}`);
         break;
       case "media":
@@ -63,24 +90,6 @@ wss.on("connection", function connection(ws) {
         break;
     }
   });
-});
-
-app.use(express.static("public"));
-
-app.get("/", (req, res) => res.sendFile(path.join(__dirname, "/index.html")));
-
-app.post("/", (req, res) => {
-  res.set("Content-Type", "text/xml");
-
-  res.send(`
-    <Response>
-      <Start>
-        <Stream url="wss://${req.headers.host}/"/>
-      </Start>
-      <Say>I will stream the next 60 seconds of audio through your websocket</Say>
-      <Pause length="60" />
-    </Response>
-  `);
 });
 
 console.log("Listening on Port 8080");
