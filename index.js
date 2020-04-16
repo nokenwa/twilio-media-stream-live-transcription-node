@@ -17,9 +17,9 @@ const request = {
   config: {
     encoding: "MULAW",
     sampleRateHertz: 8000,
-    languageCode: "en-GB"
+    languageCode: "en-GB",
   },
-  interimResults: true // If you want interim results, set this to true
+  interimResults: true, // If you want interim results, set this to true
 };
 
 wss.on("connection", function connection(ws) {
@@ -32,26 +32,26 @@ wss.on("connection", function connection(ws) {
     switch (msg.event) {
       case "connected":
         console.log(`A new call has connected.`);
+        break;
+      case "start":
+        console.log(`Starting Media Stream ${msg.streamSid}`);
         // Create Stream to the Google Speech to Text API
         recognizeStream = client
           .streamingRecognize(request)
           .on("error", console.error)
-          .on("data", data => {
+          .on("data", (data) => {
             console.log(data.results[0].alternatives[0].transcript);
-            wss.clients.forEach(client => {
+            wss.clients.forEach((client) => {
               if (client.readyState === WebSocket.OPEN) {
                 client.send(
                   JSON.stringify({
                     event: "interim-transcription",
-                    text: data.results[0].alternatives[0].transcript
+                    text: data.results[0].alternatives[0].transcript,
                   })
                 );
               }
             });
           });
-        break;
-      case "start":
-        console.log(`Starting Media Stream ${msg.streamSid}`);
         break;
       case "media":
         // Write Media Packets to the recognize stream
