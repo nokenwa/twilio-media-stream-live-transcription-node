@@ -46,7 +46,7 @@ Before we can get started, you’ll need to make sure to have:
 
     While this is running in a new window copy the forwarding HTTPS URL (https://xxxxx.ngrok.io) and set your Twilio number to this URL:
 
-    `$ twilio phone-numbers:update TWILIO_NUMBER --voice-url https://xxxxxxxx.ngrok.io`
+    `$ twilio phone-numbers:update YOUR_TWILIO_NUMBER_HERE --voice-url https://xxxxxxxx.ngrok.io`
 
     Install dependencies and start your server:
 
